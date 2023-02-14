@@ -1,4 +1,4 @@
-from posts.models import Categorie, Genre, Title 
+from reviews.models import Categorie, Genre, Title 
 from rest_framework import viewsets, permissions, mixins, filters 
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination 
