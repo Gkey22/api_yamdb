@@ -34,12 +34,10 @@ class SerializerUserRegistration(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Создает пользователя и отправляет код подтверждения почтой."""
-        if User.objects.filter(username=validated_data['username']).exists():
-            print('yes exist')
         user = User.objects.create_user(
                 username=validated_data['username'],
                 email=validated_data['email'],
-            )
+                )
         confirmation_code = default_token_generator.make_token(user)
         user.confirmation_code = confirmation_code
         user.save()
