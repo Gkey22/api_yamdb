@@ -1,7 +1,8 @@
 from rest_framework import serializers 
 from rest_framework.relations import SlugRelatedField 
 from reviews.models import Categorie, Genre, Title
-from rest_framework.validators import UniqueTogetherValidator 
+from rest_framework.validators import UniqueTogetherValidator
+import datetime as dt
 
 
 class CategorieSerializer(serializers.ModelSerializer): 
@@ -25,3 +26,9 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta: 
         fields = '__all__' 
         model = Title 
+
+    def validate_year(self, value):
+        year = dt.date.today().year
+        if not ( value < year):
+            raise serializers.ValidationError('Произведение ещё не вышло!')
+        return value
