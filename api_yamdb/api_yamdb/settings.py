@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from datetime import timedelta
 
 from datetime import timedelta 
 
@@ -26,7 +28,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework.authtoken',
-    'djoser',
     'reviews',
     'api',
 ]
@@ -111,19 +112,25 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 
-REST_FRAMEWORK = { 
-    'DEFAULT_PERMISSION_CLASSES': [ 
-        'rest_framework.permissions.AllowAny', 
-    ], 
-    'DEFAULT_AUTHENTICATION_CLASSES': [ 
-        'rest_framework_simplejwt.authentication.JWTAuthentication', 
-    ], 
-    'DEFAULT_FILTER_BACKENDS': [ 
-        'django_filters.rest_framework.DjangoFilterBackend', 
-    ], 
-} 
- 
-SIMPLE_JWT = { 
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7), 
-    'AUTH_HEADER_TYPES': ('Bearer', ), 
+AUTH_USER_MODEL = 'api.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'TOKEN_OBTAIN_SERIALIZER': 'api.serializers.MyTokenObtainPairSerializer',
+}
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
