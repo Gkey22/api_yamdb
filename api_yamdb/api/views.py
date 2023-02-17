@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import User
+from reviews.models import User
 
 from reviews.models import Categorie, Genre, Title 
 from rest_framework import viewsets, permissions, mixins, filters 
@@ -36,11 +36,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
 class CategorieViewSet(viewsets.ModelViewSet): 
     queryset = Categorie.objects.all() 
-    serializer_class = CategorieSerializer 
+    serializer_class = CategorieSerializer
+    permission_classes = (permissions.IsAdminUser, )
     pagination_class = LimitOffsetPagination 
  
-    def perform_create(self, serializer): 
-        serializer.save(author=self.request.admin) 
  
  
 class GenreViewSet(viewsets.ReadOnlyModelViewSet): 

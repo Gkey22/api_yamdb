@@ -5,13 +5,11 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField 
-from reviews.models import Categorie, Genre, Title
+from reviews.models import Categorie, Genre, Title, User
 from rest_framework.validators import UniqueTogetherValidator 
 
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-
-from .models import User
 
 
 class SerializerUser(serializers.ModelSerializer):
@@ -37,7 +35,7 @@ class SerializerUserRegistration(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Создает пользователя и отправляет код подтверждения почтой."""
-        user = User.objects.create_user(
+        user = User.objects.create(
                 username=validated_data['username'],
                 email=validated_data['email'],
                 )
@@ -80,7 +78,7 @@ class MyTokenObtainPairSerializer(serializers.Serializer):
         access = self.get_tokens_for_user(user)
         return access
 
-    def get_tokens_for_user(cls, user):
+    def get_tokens_for_user(self, user):
         access = AccessToken.for_user(user)
         print(access)
         return {
