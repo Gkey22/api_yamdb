@@ -27,6 +27,6 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    # pagination_class = LimitOffsetPagination
-    filter_backends = (DjangoFilterBackend, )
+    pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
     search_fields = ('category', 'genre', 'name', 'year')
