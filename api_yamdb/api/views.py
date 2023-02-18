@@ -9,7 +9,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from .serializers import (CategorieSerializer, GenreSerializer, 
                           TitleSerializer, SerializerUser,
                           SerializerUserRegistration
-                          ) 
+                          )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,22 +34,26 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return get_object_or_404(User, username=self.request.user)
         
 
-class CategorieViewSet(viewsets.ModelViewSet): 
-    queryset = Categorie.objects.all() 
+class CategorieViewSet(viewsets.ModelViewSet):
+    queryset = Categorie.objects.all()
     serializer_class = CategorieSerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', )
+
+ 
+class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
     permission_classes = (permissions.IsAdminUser, )
-    pagination_class = LimitOffsetPagination 
- 
- 
- 
-class GenreViewSet(viewsets.ReadOnlyModelViewSet): 
-    queryset = Genre.objects.all() 
-    serializer_class = GenreSerializer 
-    permission_classes = (permissions.IsAdminUser, )
-    pagination_class = LimitOffsetPagination 
- 
- 
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+
+
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer 
+    serializer_class = TitleSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
+    search_fields = ('category', 'genre', 'name', 'year')
