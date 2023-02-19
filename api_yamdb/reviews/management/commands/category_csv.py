@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import csv
-from reviews.models import Categorie, Genre, Title, GenreTitle
+from reviews.models import Categorie, Genre, Title, GenreTitle, User
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -44,10 +44,10 @@ class Command(BaseCommand):
         #                                pub_date=row['pub_date']
         #                                )
 
-        # with open((settings.BASE_DIR / 'static/data/users.csv'), 'r') as csv_file:
-        #     csv_reader = csv.DictReader(csv_file)
-        #     for row in csv_reader:
-        #         User.objects.create(id=row['id'], username=row['username'], email=row['email'],
-        #                             role=row['role'], bio=row['bio'], first_name=row['first_name'],
-        #                             last_name=row['last_name']
-        #                             )
+        with open((settings.BASE_DIR / 'static/data/users.csv'), 'r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                User.objects.create(id=row['id'], username=row['username'], email=row['email'],
+                                    role=row['role'], bio=row['bio'], first_name=row['first_name'],
+                                    last_name=row['last_name']
+                                    )
