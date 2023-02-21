@@ -82,16 +82,14 @@ class MyTokenObtainPairSerializer(serializers.Serializer):
         }
 
 
-class CategorySerializer(serializers.ModelSerializer): 
-    # slug = SlugRelatedField(slug_field='name', read_only=True) 
+class CategorieSerializer(serializers.ModelSerializer): 
  
     class Meta: 
         fields = ('name', 'slug')
-        model = Category
+        model = Categorie
  
  
 class GenreSerializer(serializers.ModelSerializer): 
-    # slug = SlugRelatedField(read_only=True, slug_field='name')
  
     class Meta: 
         fields = ('name', 'slug')
@@ -100,7 +98,7 @@ class GenreSerializer(serializers.ModelSerializer):
  
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
-    categorie = CategorySerializer()
+    categorie = CategorieSerializer()
     rating = serializers.IntegerField(required=False)
  
     class Meta: 

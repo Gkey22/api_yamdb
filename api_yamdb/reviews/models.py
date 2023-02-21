@@ -6,7 +6,7 @@ from django.db import models
 User = get_user_model()
 
 
-class Category(models.Model): 
+class Categorie(models.Model): 
     name = models.CharField(max_length=256) 
     slug = models.SlugField(max_length=50, unique=True) 
  
@@ -31,7 +31,7 @@ class Title(models.Model):
         blank=False, related_name='title_genre'
     )
     categorie = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, blank=False,
+        Categorie, on_delete=models.SET_NULL, blank=False,
         null=True, related_name='title_category'
     )
 
