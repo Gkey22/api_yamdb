@@ -1,5 +1,5 @@
-from reviews.models import Categorie, Genre, Title, Review
-from rest_framework import viewsets, filters
+from reviews.models import Categorie, Genre, Title, Review, User
+from rest_framework import viewsets, filters, permissions
 from rest_framework.generics import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination 
@@ -9,6 +9,36 @@ from .serializers import (CategorieSerializer, GenreSerializer,
                           CommentSerializer, ReviewSerializer
                           )
 
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = SerializerUser
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]
+
+
+class UserRegistrationViewSet(viewsets.ModelViewSet):
+    serializer_class = SerializerUserRegistration
+    queryset = User.objects.all()
+    #permission_classes = [permissions.AllowAny,]
+    #lookup_field = settings.USER_ID_FIELD
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = SerializerUser
+    queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_object(self):
+        return get_object_or_404(User, username=self.request.user)
+        
+
+class CategorieViewSet(viewsets.ModelViewSet): 
+    queryset = Categorie.objects.all() 
+    serializer_class = CategorieSerializer 
+    pagination_class = LimitOffsetPagination 
+ 
+    def perform_create(self, serializer): 
+        serializer.save(author=self.request.admin) 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Categorie.objects.all()

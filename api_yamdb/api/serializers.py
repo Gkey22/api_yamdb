@@ -1,4 +1,9 @@
+from django.contrib.auth import authenticate, get_user_model
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from django.core.mail import send_mail
 from rest_framework.relations import SlugRelatedField 
 import datetime as dt
 from reviews.models import Categorie, Genre, Title, User, Comment, Review
