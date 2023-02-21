@@ -1,16 +1,13 @@
+from django.contrib.auth import get_user_model 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.db import models
 
 
-class User(AbstractUser):
-    email = models.EmailField(max_length=254, unique=True, blank=False)
-    confirmation_code = models.TextField(blank=True)
+User = get_user_model()
 
 
-class Categorie(models.Model): 
+class Category(models.Model): 
     name = models.CharField(max_length=256) 
-    slug = models.SlugField(max_length=50,unique=True) 
+    slug = models.SlugField(max_length=50, unique=True) 
  
     def __str__(self): 
         return self.name 
@@ -27,14 +24,14 @@ class Genre(models.Model):
 class Title(models.Model): 
     name = models.CharField(max_length=256)
     year = models.PositiveIntegerField(blank=False)
-    description = models.TextField() 
+    description = models.CharField(max_length=256, blank=True) 
     genre = models.ManyToManyField(
         Genre, through='GenreTitle', 
-        blank=True, related_name='genre_titles'
+        blank=False, related_name='title_genre'
     )
-    category = models.ForeignKey(
-        Categorie, on_delete=models.SET_NULL, blank=False,
-        null=True, related_name='title_categories'
+    categorie = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, blank=False,
+        null=True, related_name='title_category'
     )
 
     def __str__(self): 
@@ -48,10 +45,3 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(
         Genre, on_delete=models.CASCADE, related_name='genres'
     )
-    
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title', 'genre'], name='unique_genre'
-            ),
-        ]

@@ -1,8 +1,3 @@
-from django.contrib.auth import authenticate, get_user_model
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
-
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField 
 import datetime as dt
@@ -87,16 +82,16 @@ class MyTokenObtainPairSerializer(serializers.Serializer):
         }
 
 
-class CategorieSerializer(serializers.ModelSerializer): 
-    slug = SlugRelatedField(slug_field='name', read_only=True) 
+class CategorySerializer(serializers.ModelSerializer): 
+    # slug = SlugRelatedField(slug_field='name', read_only=True) 
  
     class Meta: 
         fields = ('name', 'slug')
-        model = Categorie
+        model = Category
  
  
 class GenreSerializer(serializers.ModelSerializer): 
-    slug = SlugRelatedField(read_only=True, slug_field='name')
+    # slug = SlugRelatedField(read_only=True, slug_field='name')
  
     class Meta: 
         fields = ('name', 'slug')
@@ -104,24 +99,17 @@ class GenreSerializer(serializers.ModelSerializer):
  
  
 class TitleSerializer(serializers.ModelSerializer):
-    genre = serializers.SlugRelatedField(
-        queryset=Genre.objects.all(),
-        slug_field='slug',
-        many=True
-    )
-    category = serializers.SlugRelatedField(
-        queryset=Categorie.objects.all(),
-        slug_field='slug'
-    )
+    genre = GenreSerializer(many=True)
+    categorie = CategorySerializer()
     rating = serializers.IntegerField(required=False)
  
     class Meta: 
-        fields = ('id', 'name', 'year', 'category', 'genre', 'rating', 'description')
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'categorie')
         model = Title
 
     def validate_year(self, value):
         year = dt.date.today().year
-        if not ( value > year):
+        if not ( value < year):
             raise serializers.ValidationError('Произведение ещё не вышло!')
         return value
         

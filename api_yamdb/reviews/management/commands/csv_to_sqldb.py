@@ -1,46 +1,54 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 import csv
-from reviews.models import Categorie, Genre, Title, GenreTitle
+from reviews.models import Category, Genre, Title, GenreTitle
 
 class Command(BaseCommand):
+    """Импорт данных из csv в DB через модели
+    (Categorie, Genre, Title, GenteTitle, User, Review)
+    """
     def handle(self, *args, **options):
         with open((settings.BASE_DIR / 'static/data/category.csv'), 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                Categorie.objects.create(id=row['id'], name=row['name'], slug=row['slug'])
+                Category.objects.create(id=row['id'], name=row['name'], slug=row['slug'])
 
         with open((settings.BASE_DIR / 'static/data/genre.csv'), 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 Genre.objects.create(id=row['id'], name=row['name'], slug=row['slug'])
 
-        with open((settings.BASE_DIR / 'static/data/genre_title.csv'), 'r') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for row in csv_reader:
-                GenreTitle.objects.create(id=row['id'], genre_id=row['genre_id'], 
-                                          title_id=row['title_id']
-                                          )
-
         with open((settings.BASE_DIR / 'static/data/titles.csv'), 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
+                categorie = Category.objects.get(pk=row['category_id'])
                 Title.objects.create(id=row['id'], name=row['name'], year=row['year'], 
-                                     category_id=row['category_id']
+                                     categorie=categorie
                                      )
 
+        with open((settings.BASE_DIR / 'static/data/genre_title.csv'), 'r') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                GenreTitle.objects.create(id=row['id'], genre_id=row['genre_id'],
+                                          title_id=row['title_id']
+                                          )
+                
         # with open((settings.BASE_DIR / 'static/data/comments.csv'), 'r') as csv_file:
         #     csv_reader = csv.DictReader(csv_file)
         #     for row in csv_reader:
-        #         Comment.objects.create(id=row['id'], review_id=row['review_id'], 
-        #                                text=row['text'], author=row['author'], pub_date=row['pub_date'] 
+                # review = Review.objects.get(pk=row['review_id'])
+                # author = User.objects.get(pk=row['author'])
+        #         Comment.objects.create(id=row['id'], review=review, 
+        #                                text=row['text'], author=author,, pub_date=row['pub_date'] 
         #                                )
 
         # with open((settings.BASE_DIR / 'static/data/review.csv'), 'r') as csv_file:
         #     csv_reader = csv.DictReader(csv_file)
         #     for row in csv_reader:
-        #         Review.objects.create(id=row['id'], title_id=row['title_id'], 
-        #                                text=row['text'], author=row['author'], score=row['score'],
+        #         title = Title.objects.get(pk=row['title_id'])
+        #         author = User.objects.get(pk=row['author'])
+        #         Review.objects.create(id=row['id'], title=title, 
+        #                                text=row['text'], author=author, score=row['score'],
         #                                pub_date=row['pub_date']
         #                                )
 
