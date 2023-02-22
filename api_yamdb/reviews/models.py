@@ -1,16 +1,67 @@
-from django.contrib.auth import get_user_model 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 
 
 class User(AbstractUser):
-    email = models.EmailField(max_length=254, unique=True, blank=False)
-    confirmation_code = models.TextField(blank=True)
+    '''Пользователь'''
+
+    ADMIN = "admin"
+    MODERATOR = "moderator"
+    USER = "user"
+    ROLE = [
+        (ADMIN, "Администратор"),
+        (MODERATOR, "Модератор"),
+        (USER, "Пользователь")
+    ]
+
+    email = models.EmailField(
+        max_length=254,
+        unique=True,
+        blank=False
+    )
+    role = models.CharField(
+        max_length=16,
+        choices=ROLE,
+        default=USER
+    )
+    bio = models.TextField(blank=True)
+    confirmation_code = models.CharField(
+        max_length=36,
+        blank=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['username', 'email'],
+                name='unique_username_email'
+            )
+        ]
+    @property
+    def is_user(self):
+        if self.role == self.USER:
+            return True
+        else:
+            return False
+
+    @property
+    def is_moderator(self):
+        if self.role == self.MODERATOR:
+            return True
+        else:
+            return False
+
+    @property
+    def is_admin(self):
+        if self.role == self.ADMIN:
+            return True
+        else:
+            return False
 
 
-class Categorie(models.Model): 
+class Categorie(models.Model):
+    '''Категории'''
     name = models.CharField(max_length=256) 
     slug = models.SlugField(max_length=50, unique=True) 
  
@@ -18,7 +69,8 @@ class Categorie(models.Model):
         return self.name 
 
 
-class Genre(models.Model): 
+class Genre(models.Model):
+    '''Жанры'''
     name = models.CharField(max_length=256) 
     slug = models.SlugField(max_length=50, unique=True) 
  
@@ -26,7 +78,8 @@ class Genre(models.Model):
         return self.name
 
 
-class Title(models.Model): 
+class Title(models.Model):
+    '''Произведения'''
     name = models.CharField(max_length=256)
     year = models.PositiveIntegerField(blank=False)
     description = models.CharField(max_length=256, blank=True) 
@@ -44,6 +97,7 @@ class Title(models.Model):
     
 
 class GenreTitle(models.Model):
+    '''Связывающий класс'''
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='titles'
     )

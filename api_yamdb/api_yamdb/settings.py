@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-from datetime import timedelta 
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -126,6 +124,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 
+AUTH_USER_MODEL = 'reviews.User'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -133,6 +132,8 @@ SIMPLE_JWT = {
     'TOKEN_OBTAIN_SERIALIZER': 'api.serializers.MyTokenObtainPairSerializer',
 }
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
+EMAIL_ADMIN = 'Admin@admin.com'
