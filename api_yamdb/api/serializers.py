@@ -1,16 +1,6 @@
-from django.contrib.auth import authenticate, get_user_model
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from django.core.mail import send_mail
-from rest_framework.relations import SlugRelatedField 
 import datetime as dt
 from reviews.models import Categorie, Genre, Title, User, Comment, Review
-from rest_framework.validators import UniqueTogetherValidator 
-
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,35 +30,48 @@ class AuthTokenSerializer(serializers.Serializer):
     confirmation_code = serializers.CharField(max_length=50)
 
 
-class CategorieSerializer(serializers.ModelSerializer): 
- 
-    class Meta: 
+class CategorieSerializer(serializers.ModelSerializer):
+
+    class Meta:
         fields = ('name', 'slug')
         model = Categorie
- 
- 
-class GenreSerializer(serializers.ModelSerializer): 
- 
-    class Meta: 
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
         fields = ('name', 'slug')
-        model = Genre 
- 
- 
+        model = Genre
+
+
 class TitleSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     categorie = CategorieSerializer()
     rating = serializers.IntegerField(required=False)
- 
-    class Meta: 
-        fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'categorie')
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'categorie'
+                  )
         model = Title
 
     def validate_year(self, value):
         year = dt.date.today().year
-        if not ( value < year):
+        if not (value < year):
             raise serializers.ValidationError('Произведение ещё не вышло!')
         return value
-        
+
+
+class CUDTitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(), slug_field='slug', many=True)
+    category = serializers.SlugRelatedField(
+        queryset=Categorie.objects.all(), slug_field='slug')
+
+    class Meta:
+        model = Title
+        fields = ['id', 'name', 'year', 'description', 'genre', 'category']
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализация модели Review."""

@@ -38,6 +38,7 @@ class User(AbstractUser):
                 name='unique_username_email'
             )
         ]
+
     @property
     def is_user(self):
         if self.role == self.USER:
@@ -62,19 +63,19 @@ class User(AbstractUser):
 
 class Categorie(models.Model):
     '''Категории'''
-    name = models.CharField(max_length=256) 
-    slug = models.SlugField(max_length=50, unique=True) 
- 
-    def __str__(self): 
-        return self.name 
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Genre(models.Model):
     '''Жанры'''
-    name = models.CharField(max_length=256) 
-    slug = models.SlugField(max_length=50, unique=True) 
- 
-    def __str__(self): 
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def __str__(self):
         return self.name
 
 
@@ -82,9 +83,9 @@ class Title(models.Model):
     '''Произведения'''
     name = models.CharField(max_length=256)
     year = models.PositiveIntegerField(blank=False)
-    description = models.CharField(max_length=256, blank=True) 
+    description = models.CharField(max_length=256, blank=True)
     genre = models.ManyToManyField(
-        Genre, through='GenreTitle', 
+        Genre, through='GenreTitle',
         blank=False, related_name='title_genre'
     )
     categorie = models.ForeignKey(
@@ -92,9 +93,9 @@ class Title(models.Model):
         null=True, related_name='title_category'
     )
 
-    def __str__(self): 
+    def __str__(self):
         return self.name
-    
+
 
 class GenreTitle(models.Model):
     '''Связывающий класс'''
