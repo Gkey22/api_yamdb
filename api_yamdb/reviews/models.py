@@ -54,7 +54,7 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-    
+
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
 
@@ -69,7 +69,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         ordering = ('name',)
 
@@ -83,11 +83,11 @@ class Genre(models.Model):
         unique=True
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ('name',)
+
+    def __str__(self):
+        return self.name
 
 
 class Title(models.Model):
@@ -113,7 +113,7 @@ class Title(models.Model):
 
     class Meta:
         ordering = ('name', )
-    
+
     def __str__(self):
         return self.name
 
