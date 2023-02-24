@@ -1,8 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 import csv
-from reviews.models import (Categorie, Genre, Title,
-                            GenreTitle, Comment, Review, User
+from reviews.models import (Category, Genre, Title,
+                            Comment, Review, User
                             )
 
 ALREDY_LOADED_ERROR_MESSAGE = """
@@ -16,17 +17,17 @@ ALREDY_LOADED_ERROR_MESSAGE = """
 
 class Command(BaseCommand):
     """Импорт данных из csv в DB через модели
-    (Categorie, Genre, Title, GenteTitle, User, Review)
+    (Category, Genre, Title, GenteTitle, User, Review)
     """
     def handle(self, *args, **options):
         with open((settings.BASE_DIR / 'static/data/category.csv'),
                   'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                Categorie.objects.create(id=row['id'],
-                                         name=row['name'],
-                                         slug=row['slug']
-                                         )
+                Category.objects.create(id=row['id'],
+                                        name=row['name'],
+                                        slug=row['slug']
+                                        )
 
         with open((settings.BASE_DIR / 'static/data/genre.csv'),
                   'r') as csv_file:
@@ -41,21 +42,21 @@ class Command(BaseCommand):
                   'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                categorie = Categorie.objects.get(pk=row['category_id'])
+                category = Category.objects.get(pk=row['category_id'])
                 Title.objects.create(id=row['id'],
                                      name=row['name'],
                                      year=row['year'],
-                                     categorie=categorie
+                                     category=category
                                      )
 
         with open((settings.BASE_DIR / 'static/data/genre_title.csv'),
                   'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                GenreTitle.objects.create(id=row['id'],
-                                          genre_id=row['genre_id'],
-                                          title_id=row['title_id']
-                                          )
+                title_obj = get_object_or_404(Title, id=row['title_id'])
+                genre_obj = get_object_or_404(Genre, id=row['genre_id'])
+                title_obj.genre.add(genre_obj)
+                title_obj.save()
 
         with open((settings.BASE_DIR / 'static/data/users.csv'),
                   'r') as csv_file:
