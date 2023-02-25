@@ -6,8 +6,8 @@ from rest_framework import filters, permissions, status, viewsets, mixins
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Comment, Genre, Review, Title, CustomUser
 
+from reviews.models import Category, Comment, Genre, Review, Title, CustomUser
 from .filters import TitleFilter
 from .permission import (AdminOrReadOnly, IsAdminOrStaffPermission,
                          IsAuthorOrModerPermission, IsUserForSelfPermission)
