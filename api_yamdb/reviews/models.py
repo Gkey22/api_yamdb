@@ -25,10 +25,6 @@ class CustomUser(AbstractUser):
         choices=USER_ROLE_CHOICES,
         default=USER_ROLE_USER)
     bio = models.TextField(blank=True)
-    confirmation_code = models.CharField(
-        max_length=50,
-        blank=True
-    )
 
     @property
     def is_user(self):

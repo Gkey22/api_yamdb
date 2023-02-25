@@ -1,3 +1,4 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -5,8 +6,8 @@ from rest_framework import filters, permissions, status, viewsets, mixins
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Comment, Genre, Review, Title, CustomUser
 
+from reviews.models import Category, Comment, Genre, Review, Title, CustomUser
 from .filters import TitleFilter
 from .permission import (AdminOrReadOnly, IsAdminOrStaffPermission,
                          IsAuthorOrModerPermission, IsUserForSelfPermission)
@@ -150,13 +151,12 @@ def signup_new_user(request):
 def get_token(request):
     serializer = AuthTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data['username']
-    confirmation_code = serializer.validated_data['confirmation_code']
-    user = get_object_or_404(CustomUser, username=username)
-    if user.confirmation_code == confirmation_code:
-        refresh = AccessToken.for_user(user)
-        token_data = {'token': str(refresh.access_token)}
-        return Response(token_data, status=status.HTTP_200_OK)
-    return Response(
-        'Код подтверждения неверный', status=status.HTTP_400_BAD_REQUEST
+    user = get_object_or_404(
+        CustomUser, username=serializer.validated_data.get('username')
     )
+    if default_token_generator.check_token(
+        user, serializer.validated_data.get('confirmation_code')
+    ):
+        token = AccessToken.for_user(user)
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

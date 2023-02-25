@@ -1,9 +1,9 @@
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
-from reviews.models import Title, CustomUser
-from django.contrib.auth.tokens import default_token_generator
-
 from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
+
+from reviews.models import Title, CustomUser
 
 
 class CurrentTitleDefault:
@@ -20,10 +20,9 @@ class CurrentTitleDefault:
 def generate_and_send_confirmation_code_to_email(username):
     user = get_object_or_404(CustomUser, username=username)
     confirmation_code = default_token_generator.make_token(user)
-    default_token_generator.check_token(user, confirmation_code)
     send_mail(
         'Код подтвержения для регистрации',
-        f'Ваш код для получения токена {user.confirmation_code}',
+        f'Ваш код для получения токена {confirmation_code}',
         settings.EMAIL_ADMIN,
         [user.email],
         fail_silently=False,
