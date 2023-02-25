@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -57,9 +56,6 @@ class CustomUser(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'
-
-
-User = get_user_model()
 
 
 class Category(models.Model):
@@ -121,7 +117,7 @@ class Title(models.Model):
 class Review(models.Model):
     ''''Модель обзоров'''
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        CustomUser, on_delete=models.CASCADE,
         related_name='reviews')
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE,
@@ -154,7 +150,7 @@ class Review(models.Model):
 class Comment(models.Model):
     '''Модель комментариев'''
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        CustomUser, on_delete=models.CASCADE,
         related_name='commented')
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE,

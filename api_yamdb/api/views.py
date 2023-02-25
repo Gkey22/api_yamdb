@@ -4,8 +4,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets, mixins
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from reviews.models import Category, Comment, Genre, Review, Title, User
+from rest_framework_simplejwt.tokens import AccessToken
+from reviews.models import Category, Comment, Genre, Review, Title, CustomUser
 
 from .filters import TitleFilter
 from .permission import (AdminOrReadOnly, IsAdminOrStaffPermission,
@@ -94,7 +94,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrStaffPermission,)
     filter_backends = (filters.SearchFilter,)
@@ -122,7 +122,7 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def signup_new_user(request):
     username = request.data.get('username')
-    if not User.objects.filter(username=username).exists():
+    if not CustomUser.objects.filter(username=username).exists():
         serializer = AuthSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if serializer.validated_data['username'] != 'me':
@@ -132,7 +132,7 @@ def signup_new_user(request):
         return Response(
             'Username указан невено!', status=status.HTTP_400_BAD_REQUEST
         )
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(CustomUser, username=username)
     serializer = AuthSignUpSerializer(
         user, data=request.data, partial=True
     )
@@ -152,14 +152,9 @@ def get_token(request):
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['username']
     confirmation_code = serializer.validated_data['confirmation_code']
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return Response(
-            'Пользователь не найден', status=status.HTTP_404_NOT_FOUND
-        )
+    user = get_object_or_404(CustomUser, username=username)
     if user.confirmation_code == confirmation_code:
-        refresh = RefreshToken.for_user(user)
+        refresh = AccessToken.for_user(user)
         token_data = {'token': str(refresh.access_token)}
         return Response(token_data, status=status.HTTP_200_OK)
     return Response(
